@@ -57,10 +57,11 @@ docker-compose up -d
 Para destruir a rede:
 
 ```shell
+ -v - apaga todos os volumes ao destruir os contêineres
 docker-compose down -v
 ```
 
-> A opção -v irá apagar todos os volumes dos contêineres ao destruí-los.
+> É importante saber que o script não trata das imagens geradas para os chaincodes nas instalações e atualizações de versão dos mesmos. Ainda não há um mecanismo automático implementado para tal.
 
 ## Teste da Rede
 
