@@ -57,7 +57,7 @@ docker-compose up -d
 Para destruir a rede:
 
 ```shell
- -v - apaga todos os volumes ao destruir os contêineres
+# -v - apaga todos os volumes ao destruir os contêineres
 docker-compose down -v
 ```
 
