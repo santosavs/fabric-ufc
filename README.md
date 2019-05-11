@@ -19,7 +19,7 @@ Sequência de passos para a geração da rede Fabric.
 ### Clonando o repositório
 
 ```shell
-git clone
+git clone https://github.com/santosavs/fabric-ufc
 ```
 
 ### Gerando artefatos da rede
