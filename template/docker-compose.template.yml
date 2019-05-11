@@ -1,0 +1,139 @@
+version: '3.5'
+
+volumes:
+  orderer.ufc.br:
+  peer0.ppgeti.ufc.br:
+
+networks:
+  research:
+    name: research
+
+services:
+  orderer.ufc.br:
+    container_name: orderer.ufc.br
+    image: hyperledger/fabric-orderer:1.2.1
+    environment:
+      - FABRIC_LOGGING_SPEC=info
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/etc/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/etc/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/etc/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_TLS_CAFILE=/etc/hyperledger/msp/orderer/msp/tlscacerts/tlsca.serpro-cert.pem
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ./config/:/etc/hyperledger/configtx
+        - ./crypto-config/ordererOrganizations/ufc.br/orderers/orderer.ufc.br/:/etc/hyperledger/orderer
+        - orderer.ufc.br:/var/hyperledger/production/orderer
+    networks:
+      - research
+
+  ca.ppgeti.ufc.br:
+    image: hyperledger/fabric-ca:1.2.1
+    container_name: ca.ppgeti.ufc.br
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.ppgeti.ufc.br
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ppgeti.ufc.br-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/CA_TLS_KEY
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw'
+    volumes:
+      - ./crypto-config/peerOrganizations/ppgeti.ufc.br/ca/:/etc/hyperledger/fabric-ca-server-config
+    networks:
+      - research
+
+  peer0.ppgeti.ufc.br:
+    container_name: peer0.ppgeti.ufc.br
+    image: hyperledger/fabric-peer:1.2.1
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=info
+      - CORE_CHAINCODE_LOGGING_LEVEL=info
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=research
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdbppgeti:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+      - CORE_PEER_ADDRESS=peer0.ppgeti.ufc.br:7051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ppgeti.ufc.br:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ppgeti.ufc.br:7051
+      - CORE_PEER_ID=peer0.ppgeti.ufc.br
+      - CORE_PEER_LOCALMSPID=PpgetiMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/peer/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/peer/tls/ca.crt
+      - ORDERER_TLS_CAFILE=/etc/hyperledger/orderer/msp/tlscacerts/tlsca.ufc.br-cert.pem
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    ports:
+      - 7051:7051
+      - 7053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./config:/etc/hyperledger/configtx
+        - ./crypto-config/peerOrganizations/ppgeti.ufc.br/peers/peer0.ppgeti.ufc.br/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/ppgeti.ufc.br/peers/peer0.ppgeti.ufc.br/tls:/etc/hyperledger/peer/tls
+        - ./crypto-config/ordererOrganizations/ufc.br/orderers/orderer.ufc.br/msp:/etc/hyperledger/orderer/msp
+        - peer0.ppgeti.ufc.br:/var/hyperledger/production
+    depends_on:
+      - orderer.ufc.br
+      - couchdbppgeti
+    networks:
+      - research
+
+  couchdbppgeti:
+    container_name: couchdbppgeti
+    image: hyperledger/fabric-couchdb:0.4.10
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - 5984:5984
+    networks:
+      - research
+
+  cli.ppgeti:
+    container_name: cli.ppgeti
+    image: hyperledger/fabric-tools:1.2.1
+    tty: true
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=cli.ppgeti
+      - CORE_PEER_ADDRESS=peer0.ppgeti.ufc.br:7051
+      - CORE_PEER_LOCALMSPID=PpgetiMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/organization/users/Admin@ppgeti.ufc.br/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/peer/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/peer/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/peer/tls/ca.crt
+      - CORE_CHAINCODE_KEEPALIVE=10
+      - FABRIC_LOGGING_SPEC=info
+      - GOPATH=/opt/gopath
+      - ORDERER_TLS_CAFILE=/etc/hyperledger/orderer/msp/tlscacerts/tlsca.ufc.br-cert.pem
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./chaincode/:/opt/gopath/src/github.com/chaincode
+        - ./config:/etc/hyperledger/configtx
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./crypto-config/peerOrganizations/ppgeti.ufc.br/peers/peer0.ppgeti.ufc.br/msp:/etc/hyperledger/peer/msp
+        - ./crypto-config/peerOrganizations/ppgeti.ufc.br/peers/peer0.ppgeti.ufc.br/tls:/etc/hyperledger/peer/tls
+        - ./crypto-config/peerOrganizations/ppgeti.ufc.br/users:/etc/hyperledger/organization/users
+        - ./crypto-config/ordererOrganizations/ufc.br/orderers/orderer.ufc.br/msp:/etc/hyperledger/orderer/msp
+    networks:
+        - research
