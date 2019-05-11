@@ -40,6 +40,28 @@ No final da execução, serão gerados os diretórios:
 - `config`: arquivos transacionais de configuração do ordenador, canais e organizações
 - `cryptoconfig`: certificados das entidades
 
+### Iniciando a rede
+
+O script de criação de artefatos contempla, também, a geração do `docker-compose.yml`para inicialização da rede. Basta executar o seguinte comando:
+
+```shell
+docker-compose up
+```
+
+Caso deseje executar em modo daemon:
+
+```shell
+docker-compose up -d
+```
+
+Para destruir a rede:
+
+```shell
+docker-compose down -v
+```
+
+> A opção -v irá apagar todos os volumes dos contêineres ao destruí-los.
+
 ## Teste da Rede
 
 Sequência de passos para validar a funcionalidade da rede com o chaincode de teste.
