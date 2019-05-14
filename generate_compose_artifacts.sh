@@ -3,9 +3,9 @@
 # cryptconfig/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp
 # signcerts - certificado Admin da organização
 # keystore - chave privada
-PPGETI_ADMINCERT_PATH=cryptconfig/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp/signcerts/Admin@ppgeti.ufc.br-cert.pem
-PPGETI_PK_PATH=cryptconfig/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp/keystore
-PPGETI_PK=$(ls cryptconfig/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp/keystore | grep _sk)
+PPGETI_ADMINCERT_PATH=crypto-config/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp/signcerts/Admin@ppgeti.ufc.br-cert.pem
+PPGETI_PK_PATH=crypto-config/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp/keystore
+PPGETI_PK=$(ls crypto-config/peerOrganizations/ppgeti.ufc.br/users/Admin@ppgeti.ufc.br/msp/keystore | grep _sk)
 
 composer card create -p connection-ppgeti.json \
 -u PeerAdmin -c ${PPGETI_ADMINCERT_PATH} \
