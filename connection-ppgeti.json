@@ -1,7 +1,20 @@
 {
-  "name": "ufc-network",
+  "name": "ufc",
   "x-type": "hlfv1",
   "version": "1.0.0",
+  "client": {
+    "organization": "Ppgeti",
+    "connection": {
+      "timeout": {
+        "peer": {
+          "endorser": "300",
+          "eventHub": "300",
+          "eventReg": "300"
+        },
+        "orderer": "300"
+      }
+    }
+  },
   "channels": {
     "researchchannel": {
       "orderers": [
@@ -53,7 +66,7 @@
   "certificateAuthorities": {
     "ca.ppgeti.ufc.br": {
       "url": "https://ca.ppgeti.ufc.br:7054",
-      "caName": "ca-ppgeti",
+      "caName": "ca.ppgeti.ufc.br",
       "httpOptions": {
         "verify": false
       }
