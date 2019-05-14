@@ -1,28 +1,62 @@
 {
   "name": "ufc-network",
-  "type": "hlfv1",
-  "mspID": "PpgetiMSP",
-  "peers": [
-    {
-      "requestURL": "grpcs://peer0.ppgeti.ufc.br:7051",
-      "eventURL": "grpcs://peer0.ppgeti.ufc.br:7053",
-      "cert": "crypto-config/peerOrganizations/ppgeti.ufc.br/peers/peer0.ppgeti.ufc.br/tls/ca.crt",
-      "hostnameOverride": "peer0.ppgeti.ufc.br"
+  "x-type": "hlfv1",
+  "version": "1.0.0",
+  "channels": {
+    "researchchannel": {
+      "orderers": [
+        "orderer.ufc.br"
+      ],
+      "peers": {
+        "peer0.ppgeti.ufc.br": {
+          "endorsingPeer": true,
+          "chaincodeQuery": true,
+          "eventSource": true
+        }
+      }
     }
-  ],
-  "ca": {
-    "url": "https://ca.ppgeti.ufc.br:7054",
-    "name": "ca-ppgeti",
-    "cert": "crypto-config/peerOrganizations/ppgeti.ufc.br/peers/peer0.ppgeti.ufc.br/tls/ca.crt",
-    "hostnameOverride": "ca.ppgeti.ufc.br"
   },
-  "orderers": [
-    {
-      "url": "grpcs://orderer.ufc.br:7050",
-      "cert": "crypto-config/ordererOrganizations/ufc.br/orderers/orderer.ufc.br/tls/ca.crt",
-      "hostnameOverride": "orderer.ufc.br"
+  "organizations": {
+    "Ppgeti": {
+      "mspid": "PpgetiMSP",
+      "peers": [
+        "peer0.ppgeti.ufc.br",
+        "peer1.ppgeti.ufc.br"
+      ],
+      "certificateAuthorities": [
+        "ca.ppgeti.ufc.br"
+      ]
     }
-  ],
-  "channel": "researchchannel",
-  "timeout": 300
+  },
+  "orderers": {
+    "orderer.ufc.br": {
+      "url": "grpcs://orderer.ufc.br:7050",
+      "grpcOptions": {
+        "ssl-target-name-override": "orderer.ufc.br"
+      },
+      "tlsCACerts": {
+        "pem": "INSERT_ORDERER_CA_CERT"
+      }
+    }
+  },
+  "peers": {
+    "peer0.ppgeti.ufc.br": {
+      "url": "grpcs://peer0.ppgeti.ufc.br:7051",
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.ppgeti.ufc.br"
+      },
+      "tlsCACerts": {
+        "pem": "INSERT_Ppgeti_CA_CERT"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.ppgeti.ufc.br": {
+      "url": "https://ca.ppgeti.ufc.br:7054",
+      "caName": "ca-ppgeti",
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
 }
