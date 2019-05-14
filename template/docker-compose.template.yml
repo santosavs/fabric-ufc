@@ -7,6 +7,9 @@ volumes:
 networks:
   research:
     name: research
+    ipam:
+      config:
+        - subnet: 173.17.0.0/24
 
 services:
   orderer.ufc.br:
@@ -33,7 +36,8 @@ services:
         - ./crypto-config/ordererOrganizations/ufc.br/orderers/orderer.ufc.br/:/etc/hyperledger/orderer
         - orderer.ufc.br:/var/hyperledger/production/orderer
     networks:
-      - research
+      research:
+        ipv4_address: 173.17.0.101
 
   ca.ppgeti.ufc.br:
     image: hyperledger/fabric-ca:1.2.1
@@ -50,7 +54,8 @@ services:
     volumes:
       - ./crypto-config/peerOrganizations/ppgeti.ufc.br/ca/:/etc/hyperledger/fabric-ca-server-config
     networks:
-      - research
+      research:
+        ipv4_address: 173.17.0.102
 
   peer0.ppgeti.ufc.br:
     container_name: peer0.ppgeti.ufc.br
@@ -93,7 +98,8 @@ services:
       - orderer.ufc.br
       - couchdbppgeti
     networks:
-      - research
+      research:
+        ipv4_address: 173.17.0.103
 
   couchdbppgeti:
     container_name: couchdbppgeti
@@ -104,7 +110,8 @@ services:
     ports:
       - 5984:5984
     networks:
-      - research
+      research:
+        ipv4_address: 173.17.0.104
 
   cli.ppgeti:
     container_name: cli.ppgeti
@@ -136,4 +143,5 @@ services:
         - ./crypto-config/peerOrganizations/ppgeti.ufc.br/users:/etc/hyperledger/organization/users
         - ./crypto-config/ordererOrganizations/ufc.br/orderers/orderer.ufc.br/msp:/etc/hyperledger/orderer/msp
     networks:
-        - research
+      research:
+        ipv4_address: 173.17.0.105
