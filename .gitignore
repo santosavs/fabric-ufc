@@ -1,5 +1,6 @@
 bin/*
 config/**/*.*
 crypto-config/**/*.*
+ppgetiuser/**/*.*
 docker-compose.yml
 *.card
